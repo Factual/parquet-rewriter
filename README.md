@@ -36,7 +36,9 @@ struct Person {
 // an update record can be either an upsert 
 // or a delete, in which case we just pass in the uuid
 union Update { 
-  1: Person upsert,
+  // set person if you want an upsert
+  1: Person person,
+  // set uuid if you want a delete
   2: string uuid
 }
 
