@@ -37,7 +37,7 @@ struct Person {
 // or a delete, in which case we just pass in the uuid
 union Update { 
   1: Person upsert,
-  2: string delete
+  2: string uuid
 }
 
 We are going to use uuid as our key field and the parquet records will be sorted and partitioned into N shards
