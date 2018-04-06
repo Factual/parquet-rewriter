@@ -14,7 +14,7 @@ Parquet horizontally partitions sets of rows into row groups as depicted by this
 
 Each row group is completely independent, and row group locations and statistics are stored at the trailing end of the file. parquet-rewriter takes advantage of these characteristics and its update strategy revolves around mutating only dirty row groups, ones that contain new, deleted or updated records, and passing through unmodified row groups in their raw and already compressed form. 
 
-![alt](https://factual.github.io/parquet-rewriter/img/workflow_smaller.png)
+![alt](https://factual.github.io/parquet-rewriter/docs/img/workflow_smaller.png)
 
 
 
@@ -83,3 +83,31 @@ void updateParquetFile(Configuration conf,Path sourceFile,ArrayList<Update> sort
 
 
 ```
+# Performance Considrerations
+
+#### Row Group Size
+
+Generally speaking, the more row groups you end up mutating, the more costly your update becomes. So it is preferable to keep row groups sizes on the smaller side, but what is small and is there a penalty for too small a row group size ? Here is a graph of file sizes across two dimensions: row group size and compression type. This file consisted of 234000 records, each approximately 1800 bytes in size:
+
+![alt](https://factual.github.io/parquet-rewriter/docs/img/rowgroup_size_file_size.png)
+
+From the graph, we can see that, across all the compression schemes, there is a significant overhead associated with smaller row group sizes. However, this overhead becomes less significant as we approach approximately the 10k mark. At Factual, we use a 10K row group size. 
+
+Next, lest look at effective read/write throughput at across the same dimensions: 
+
+![alt](https://factual.github.io/parquet-rewriter/docs/img/effective_read_througput.png)
+![alt](https://factual.github.io/parquet-rewriter/docs/img/effective_write_througput.png)
+
+We define effective throughput to be the amount of uncompressed raw data that is available for us to process every second. Read throughput seems to suffer significantly at the lower row group sizes, while write throughput numbers seem to suffer less from smaller sizes, perhaps due to the fact that other CPU bound tasks dominate most of the write workflow. 
+
+Lastly, lets look at real write throughput at 100% rewrite, vs. the 10%, and 50% rewrite thresholds respectively. Here are the numbers if we rewrite 100% of our file: 
+
+![alt](https://factual.github.io/parquet-rewriter/docs/img/real_write_throughput_full.png)
+
+First of all, write throughput is pretty dismal, and obviously 100% CPU bound. Dictionary compression by itself is pretty expensive, and  block compression (especially gzip) further degrades this performance. The following graph demonstrates the relative throughput increase for the 10% vs. 50% (row group) rewrite scenarios: 
+
+![alt](https://factual.github.io/parquet-rewriter/docs/img/real_write_throughput_partial.png)
+
+We see a siginificant performance boost when the updates are in 10% range, but even at 50% threshold, we have closed to doubled our IO throughput. 
+
+
