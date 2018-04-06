@@ -56,7 +56,7 @@ public class RecordWriter<T> {
   private static final int MAXIMUM_RECORD_COUNT_FOR_CHECK = 10000;
 
   private final ParquetFileWriter parquetFileWriter;
-  private final WriteSupport<T> writeSupport;
+  private final WriteSupport<? super T> writeSupport;
   private final MessageType schema;
   private final long rowGroupSize;
   private long rowGroupSizeThreshold;
@@ -183,7 +183,7 @@ public class RecordWriter<T> {
   public RecordWriter(
           Configuration conf,
           ParquetFileWriter parquetFileWriter,
-          WriteSupport<T> writeSupport,
+          WriteSupport<? super T> writeSupport,
           MessageType schema,
           Map<String, String> extraMetaData,
           long rowGroupSize,
