@@ -1,5 +1,5 @@
-# Parquet-Rewriter
- Parquet-Rewriter allows you to mutate Parquet files. 
+# TLDR
+Parquet-rewriter is a way to update parquet files by rewriting them in a more efficient manner. Parquet-rewriter accomplishes this by only serializing/deserializing dirty row groups (ones that contain upserts or deletes) and passing others through to the destination file in their raw, unmodified form. This can be significantly faster than rewriting your parquet file from scratch.
  
 # Background
 
@@ -83,4 +83,3 @@ void updateParquetFile(Configuration conf,Path sourceFile,ArrayList<Update> sort
 
 
 ```
-
