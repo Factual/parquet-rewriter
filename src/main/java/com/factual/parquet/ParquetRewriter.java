@@ -54,14 +54,14 @@ public class ParquetRewriter<T,KT extends Comparable<KT>> implements Closeable{
   }
 
   Configuration conf;
-  KeyAccessor<T,KT> keyAccessor;
+  KeyAccessor<? super T,KT> keyAccessor;
   ColumnPath keyPath;
   ParquetFileReader reader;
   ParquetFileWriter writer;
   ArrayList<BlockMetaData>      incomingBlocks;
   ArrayList<Statistics<KT>>   incomingStats = Lists.newArrayList();
-  ReadSupport<T> readSupport;
-  WriteSupport<T> writeSupport;
+  ReadSupport<? extends T> readSupport;
+  WriteSupport<? super T> writeSupport;
   ParquetBlockMutator<T,KT> activeMutableBlock;
   int nextBlockIndex = 0;
   KT lastKey;
@@ -87,10 +87,10 @@ public class ParquetRewriter<T,KT extends Comparable<KT>> implements Closeable{
   public ParquetRewriter(Configuration incomingConf,
                          Path sourceFile,
                          Path destFile,
-                         ReadSupport<T> readSupport,
-                         WriteSupport<T> writeSupport,
+                         ReadSupport<? extends T> readSupport,
+                         WriteSupport<? super T> writeSupport,
                          int optionalRowGroupSize,
-                         KeyAccessor<T,KT> keyAccessor,
+                         KeyAccessor<? super T,KT> keyAccessor,
                          ColumnPath keyPath) throws IOException {
 
     this.conf = new Configuration(incomingConf);

@@ -32,14 +32,14 @@ import static org.apache.parquet.hadoop.ParquetOutputFormat.*;
  */
 public class ParquetBlockMutator<T,KT extends Comparable<KT>> implements Closeable {
 
-  ReadSupport<T> readSupport;
-  WriteSupport<T> writeSupport;
+  ReadSupport<? extends T> readSupport;
+  WriteSupport<? super T> writeSupport;
   ParquetFileWriter writer;
   FileMetaData sourceFileMetadata;
-  RecordWriter<T> recordWriter;
-  ParquetRewriter.KeyAccessor<T,KT> keyAccessor;
+  RecordWriter<? super T> recordWriter;
+  ParquetRewriter.KeyAccessor<? super T,KT> keyAccessor;
   PageReadStore pageReadStore;
-  RecordReader<T> recordReader;
+  RecordReader<? extends T> recordReader;
   KT lastKey;
   T lastRecord;
   long blockSize;
@@ -72,10 +72,10 @@ public class ParquetBlockMutator<T,KT extends Comparable<KT>> implements Closeab
           long blockSize,
           PageReadStore readStore,
           FileMetaData fileMetadata,
-          ReadSupport<T> readSupport,
-          WriteSupport<T> writeSupport,
+          ReadSupport<? extends T> readSupport,
+          WriteSupport<? super T> writeSupport,
           ParquetFileWriter fileWriter,
-          ParquetRewriter.KeyAccessor<T,KT> keyAccessor)throws IOException  {
+          ParquetRewriter.KeyAccessor<? super T,KT> keyAccessor)throws IOException  {
 
     this.readSupport = readSupport;
     this.writeSupport = writeSupport;
@@ -90,7 +90,7 @@ public class ParquetBlockMutator<T,KT extends Comparable<KT>> implements Closeab
     if (pageReadStore != null) {
       // initialize a parquet record reader for this page ...
       ReadSupport.ReadContext context = readSupport.init(new InitContext(conf, toSetMultiMap(fileMetadata.getKeyValueMetaData()), sourceFileMetadata.getSchema()));
-      RecordMaterializer<T> recordConverter = readSupport.prepareForRead(conf, fileMetadata.getKeyValueMetaData(), sourceFileMetadata.getSchema(), context);
+      RecordMaterializer<? extends T> recordConverter = readSupport.prepareForRead(conf, fileMetadata.getKeyValueMetaData(), sourceFileMetadata.getSchema(), context);
       ColumnIOFactory ioFactory = new ColumnIOFactory(false);
       MessageColumnIO columnIO = ioFactory.getColumnIO(sourceFileMetadata.getSchema());
       this.recordReader = columnIO.getRecordReader(pageReadStore, recordConverter);

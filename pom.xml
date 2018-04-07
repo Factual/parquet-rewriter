@@ -5,8 +5,10 @@
     <groupId>com.factual</groupId>
     <artifactId>parquet-rewriter</artifactId>
     <packaging>jar</packaging>
-    <version>0.1.0</version>
-
+    <version>0.1.1</version>
+    <properties>
+        <hadoop.version>2.6.0-cdh5.13.0</hadoop.version>
+    </properties>
     <build>
         <plugins>
           <plugin>
@@ -26,6 +28,12 @@
           
         </plugins>
     </build>
+    <repositories>
+        <repository>
+            <id>cloudera</id>
+            <url>https://repository.cloudera.com/artifactory/cloudera-repos/</url>
+        </repository>
+    </repositories>
     <dependencies>
         <!--there track spark versions-->
         <dependency>
@@ -48,7 +56,7 @@
             <artifactId>parquet-column</artifactId>
             <version>1.8.2</version>
         </dependency>
-
+        
         <dependency>
             <groupId>log4j</groupId>
             <artifactId>log4j</artifactId>
@@ -62,12 +70,12 @@
         <dependency>
             <groupId>org.apache.hadoop</groupId>
             <artifactId>hadoop-common</artifactId>
-            <version>2.7.0</version>
+            <version>${hadoop.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.hadoop</groupId>
             <artifactId>hadoop-mapreduce-client-common</artifactId>
-            <version>2.7.0</version>
+            <version>${hadoop.version}</version>
         </dependency>
         <dependency>
             <groupId>org.testng</groupId>
