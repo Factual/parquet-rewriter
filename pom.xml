@@ -7,7 +7,7 @@
     <packaging>jar</packaging>
     <version>0.1.1</version>
     <properties>
-        <hadoop.version>2.6.0-cdh5.13.0</hadoop.version>
+        <hadoop.version>2.6.0</hadoop.version>
     </properties>
     <build>
         <plugins>
